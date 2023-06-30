@@ -45,29 +45,21 @@ public class BackTracking_2 {
         }
         else { //sigo explorando arbol de posibilidades
 
-            Iterator<Integer> it = grafo.obtenerVertices();
-            while (it.hasNext()) {
+            Iterator<Arco> itArcos = grafo.obtenerArcos();
+            while (itArcos.hasNext()) {
 
-                Integer v = it.next();
-                Iterator<Arco> itArcos = grafo.obtenerArcos(v);
+                Arco tunel = itArcos.next();
+                int dest = tunel.getVerticeDestino();
 
-                while (itArcos.hasNext()) {
-
-                    Arco tunel = itArcos.next();
-                    int dest = tunel.getVerticeDestino();
-
-                    if(!this.contieneTunel(tunelesAux,tunel) && !isConsiderado(dest, tunelesAux)) { //verifico no haberlo considerado antes
-                        tunelesAux.add(tunel); //agreo arco a solucion actual
-                        if(this.getSumaArcos(tunelesAux) <= poda) {
-                            metrica++;
-                            this.metodoBackTracking(tunelesAux,poda); //llamo a recursividad
-                        }
-                        tunelesAux.remove(tunelesAux.size()-1); //remuevo ultimo arco agregado
+                if(!this.contieneTunel(tunelesAux,tunel) && !isConsiderado(dest, tunelesAux)) { //verifico no haberlo considerado antes
+                    tunelesAux.add(tunel); //agreo arco a solucion actual
+                    if(this.getSumaArcos(tunelesAux) <= poda) {
+                        metrica++;
+                        this.metodoBackTracking(tunelesAux,poda); //llamo a recursividad
                     }
+                    tunelesAux.remove(tunelesAux.size()-1); //remuevo ultimo arco agregado
                 }
             }
-            
-
         }
     }
 
@@ -145,5 +137,42 @@ public class BackTracking_2 {
     //obtengo metrica
     public int getMetrica() {
         return metrica;
+    }
+
+    public static void main(String[] args) {
+        GrafoNoDirigido grafo2 = new GrafoNoDirigido();
+		String path2 = "./datasets/dataset2.txt";
+
+		// inicializo readers
+		CSVReader reader2 = new CSVReader(path2);
+
+		// cargo grafos
+		reader2.read(grafo2);
+        BackTracking_2 b = new BackTracking_2(grafo2);
+        b.metodoBackTracking(135);
+        System.out.println(b.getMetrica());
+        System.out.println(b.getKms_construccion());
+        for (Arco arco : b.getTuneles()) {
+            System.out.println(arco.getVerticeOrigen());
+            System.out.println(arco.getVerticeDestino());
+        }
+        System.out.println("-------------------------");
+        GrafoNoDirigido grafo3 = new GrafoNoDirigido();
+		String path3 = "./datasets/dataset3.txt";
+
+		// inicializo readers
+		CSVReader reader3 = new CSVReader(path3);
+
+		// cargo grafos
+		reader3.read(grafo3);
+        BackTracking_2 b2 = new BackTracking_2(grafo3);
+        b2.metodoBackTracking(440);
+        System.out.println(b2.getMetrica());
+        System.out.println(b2.getKms_construccion());
+        for (Arco arco : b2.getTuneles()) {
+            System.out.println(arco.getVerticeOrigen());
+            System.out.println(arco.getVerticeDestino());
+        }
+
     }
 }

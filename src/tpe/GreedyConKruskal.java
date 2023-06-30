@@ -5,7 +5,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 
-public class Kruskal {
+public class GreedyConKruskal {
+
     
     private ArrayList<Arco> arcos;
     private Grafo grafo;
@@ -15,7 +16,7 @@ public class Kruskal {
     private int metrica;
     private int distanciaTotal;
 
-    Kruskal(Grafo grafo) {
+    GreedyConKruskal(Grafo grafo) {
         this.padres = new HashMap();
         this.arcos = new ArrayList<Arco>();
         this.grafo = grafo;
@@ -43,7 +44,7 @@ public class Kruskal {
 
     }
 
-    public boolean metodoKruskal() {
+    public int metodoKruskal() {
         metrica = 0;
         ameArcos = 0;
         distanciaTotal = 0;
@@ -68,9 +69,9 @@ public class Kruskal {
             ameNI++;
         }
         if(ameArcos==cantVertices-1) {
-            return true;
+            return distanciaTotal;
         }
-        return false;
+        return 0;
     }
 
     int find(int x) { //encuentra el mayor padre de vertice x

@@ -13,8 +13,9 @@ public class backConKruskal {
     private int distTotal;
     private int metrica;
 
-    public backConKruskal(Grafo grafo) {
+    public backConKruskal(Grafo grafo, int poda) {
         this.grafo = grafo;
+        this.poda = poda;
         this.arcos = new ArrayList<Arco>();
         this.solucionTuneles = new ArrayList<Arco>();
     }
@@ -57,7 +58,9 @@ public class backConKruskal {
             for (Arco arco : arcos) {
                 if(!actual.contains(arco)) {
                     actual.add(arco); //agrego
-                    this.backRecursivo(actual,considerados); //sigo explorando
+                    if(getSumaArcos(actual) <= poda) {
+                        this.backRecursivo(actual,considerados); //sigo explorando
+                    }
                     actual.remove(arco); //elimino
                 }
             }
@@ -118,14 +121,12 @@ public class backConKruskal {
             return false;
         }
     }
-
     int find(int x,HashMap<Integer,Integer>padres) {
         if (padres.get(x) == x) {
             return x;
         }
         return find(padres.get(x),padres);
     }
-
     void unite(int x, int y, HashMap<Integer,Integer>padres) {
         int fx = find(x,padres);
         int fy = find(y,padres);
@@ -141,6 +142,16 @@ public class backConKruskal {
               padres.replace(y,x);
             }
         }
+    }
+
+    public int getMetrica() {
+        return metrica;
+    }
+
+    public ArrayList<Arco> getTuneles() {
+        ArrayList<Arco> ret = new ArrayList<Arco>();
+        ret.addAll(solucionTuneles);
+        return ret;
     }
 
 }
