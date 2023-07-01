@@ -12,12 +12,16 @@ public class backConKruskal {
     private int poda;
     private int distTotal;
     private int metrica;
+    private int suma;
+    private Timer time;
 
-    public backConKruskal(Grafo grafo, int poda) {
+    public backConKruskal(Grafo grafo, int poda, Timer time) {
         this.grafo = grafo;
         this.poda = poda;
         this.arcos = new ArrayList<Arco>();
         this.solucionTuneles = new ArrayList<Arco>();
+        this.suma = 0;
+        this.time = time;
     }
 
     public int back() {
@@ -33,7 +37,9 @@ public class backConKruskal {
         ArrayList<Integer> considerados = new ArrayList();
 
         int pos = 0;
+        this.time.start();
         this.backRecursivo(actual,considerados,pos);
+        System.out.println(this.time.stop());
 
         return distTotal;
     }
@@ -41,14 +47,13 @@ public class backConKruskal {
     private void backRecursivo(ArrayList<Arco> actual,ArrayList<Integer> considerados,int pos) {
         metrica++;
         if(this.metodoKruskal(actual,considerados)) { //solucion posible
-            int sumaActual = getSumaArcos(actual);
             if(distTotal == 0) {
-                distTotal = sumaActual;
+                distTotal = this.suma;
                 solucionTuneles.addAll(actual);
             }
             else {
-                if(distTotal > sumaActual) {
-                    distTotal = sumaActual;
+                if(distTotal > this.suma) {
+                    distTotal = this.suma;
                     solucionTuneles.clear();
                     solucionTuneles.addAll(actual);
                 }
@@ -62,10 +67,13 @@ public class backConKruskal {
                 Arco arco = arcos.get(i);
                 if(!actual.contains(arco)) {
                     actual.add(arco); //agrego
-                    if(getSumaArcos(actual) <= poda) {
+                    int etiqueta = (int) arco.getEtiqueta();
+                    this.suma = this.suma + etiqueta;
+                    if(suma<= poda) {
                         j++;
                         this.backRecursivo(actual,considerados,j); //sigo explorando
                     }
+                    this.suma = this.suma - etiqueta;
                     actual.remove(arco); //elimino
                 }
                 i++;
@@ -74,7 +82,7 @@ public class backConKruskal {
         }
     }
 
-    private boolean verificarConsiderados(ArrayList<Arco>list,ArrayList<Integer>considerados) {
+    private boolean verificarConsiderados(ArrayList<Arco>list, ArrayList<Integer>considerados) {
         considerados.clear();
         for (Arco a : list) {
             Integer origen = a.getVerticeOrigen();
