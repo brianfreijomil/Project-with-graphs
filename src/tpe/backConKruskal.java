@@ -69,7 +69,7 @@ public class backConKruskal {
                 Arco arco = arcos.get(i);
                 if(!actual.contains(arco)) {
                     actual.add(arco); //agrego
-                    if(getSumaArcos(actual) <= poda) {
+                    if(this.suma <= poda) {
                         j++;
                         this.backRecursivo(actual,considerados,j); //sigo explorando
                     }
