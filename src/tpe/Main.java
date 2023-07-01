@@ -67,13 +67,23 @@ public class Main {
 
 		System.out.println("-----------------------------------");
 		System.out.println("backtracking con kruskal");
-		backConKruskal backKruskal2 = new backConKruskal(grafo2,110); //despues cambio esto
+		backConKruskal backKruskal2 = new backConKruskal(grafo2,135); //despues cambio esto
 		System.out.println(backKruskal2.back());
 		for (Arco arco : backKruskal2.getTuneles()) {
             System.out.print("(" + arco.getVerticeOrigen() + ", " + arco.getVerticeDestino() + ")");
         }
 		System.out.println();
 		System.out.println(backKruskal2.getMetrica());
+
+		System.out.println("-----------------------------------");
+		System.out.println("backtracking con kruskal");
+		backConKruskal backKruskal3 = new backConKruskal(grafo3,440); //despues cambio esto
+		System.out.println(backKruskal3.back());
+		for (Arco arco : backKruskal3.getTuneles()) {
+            System.out.print("(" + arco.getVerticeOrigen() + ", " + arco.getVerticeDestino() + ")");
+        }
+		System.out.println();
+		System.out.println(backKruskal3.getMetrica());
 
 		
 

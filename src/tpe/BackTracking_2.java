@@ -54,6 +54,9 @@ public class BackTracking_2 {
                 if(!this.contieneTunel(tunelesAux,tunel) && !isConsiderado(dest, tunelesAux)) { //verifico no haberlo considerado antes
                     tunelesAux.add(tunel); //agreo arco a solucion actual
                     if(this.getSumaArcos(tunelesAux) <= poda) {
+                        if(tunelesAux.size() == 12) {
+                            System.out.println(true);
+                        }
                         metrica++;
                         this.metodoBackTracking(tunelesAux,poda); //llamo a recursividad
                     }

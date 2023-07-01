@@ -32,12 +32,13 @@ public class backConKruskal {
         ArrayList<Arco> actual = new ArrayList<Arco>();
         ArrayList<Integer> considerados = new ArrayList();
 
-        this.backRecursivo(actual,considerados);
+        int pos = 0;
+        this.backRecursivo(actual,considerados,pos);
 
         return distTotal;
     }
 
-    private void backRecursivo(ArrayList<Arco> actual,ArrayList<Integer> considerados) {
+    private void backRecursivo(ArrayList<Arco> actual,ArrayList<Integer> considerados,int pos) {
         metrica++;
         if(this.metodoKruskal(actual,considerados)) { //solucion posible
             int sumaActual = getSumaArcos(actual);
@@ -55,14 +56,20 @@ public class backConKruskal {
         }
         else { //recorro todas las posibilidades
 
-            for (Arco arco : arcos) {
+            int i = pos;
+            int j = pos;
+            while(i < arcos.size()) {
+                Arco arco = arcos.get(i);
                 if(!actual.contains(arco)) {
                     actual.add(arco); //agrego
                     if(getSumaArcos(actual) <= poda) {
-                        this.backRecursivo(actual,considerados); //sigo explorando
+                        j++;
+                        this.backRecursivo(actual,considerados,j); //sigo explorando
                     }
                     actual.remove(arco); //elimino
                 }
+                i++;
+                j++;
             }
         }
     }
@@ -104,8 +111,8 @@ public class backConKruskal {
         int cantVertices = grafo.cantidadVertices();
 
         while((iArcos<cantVertices-1)&&(i<cantArcos)) {
-            Integer origen = arcos.get(i).getVerticeOrigen();
-            Integer destino = arcos.get(i).getVerticeDestino();
+            Integer origen = candidato.get(i).getVerticeOrigen();
+            Integer destino = candidato.get(i).getVerticeDestino();
             if(find(origen,padres)!=find(destino,padres)) {
                 unite(origen, destino,padres);
                 iArcos++;
