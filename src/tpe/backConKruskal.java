@@ -78,6 +78,7 @@ public class backConKruskal {
             }
         }
     }
+    }
 
     private boolean verificarConsiderados(ArrayList<Arco>list, ArrayList<Integer>considerados) {
         considerados.clear();
