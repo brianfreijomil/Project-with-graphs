@@ -12,7 +12,6 @@ public class backConKruskal {
     private int poda;
     private int distTotal;
     private int metrica;
-    private int suma;
     private Timer time;
 
     public backConKruskal(Grafo grafo, int poda, Timer time) {
@@ -20,7 +19,6 @@ public class backConKruskal {
         this.poda = poda;
         this.arcos = new ArrayList<Arco>();
         this.solucionTuneles = new ArrayList<Arco>();
-        this.suma = 0;
         this.time = time;
     }
 
@@ -48,13 +46,14 @@ public class backConKruskal {
     private void backRecursivo(ArrayList<Arco> actual,ArrayList<Integer> considerados,int pos) {
         metrica++;
         if(this.metodoKruskal(actual,considerados)) { //solucion posible
+            int sumaActual = this.getSumaArcos(actual);
             if(distTotal == 0) {
-                distTotal = this.suma;
+                distTotal = sumaActual;
                 solucionTuneles.addAll(actual);
             }
             else {
-                if(distTotal > this.suma) {
-                    distTotal = this.suma;
+                if(distTotal > sumaActual) {
+                    distTotal = sumaActual;
                     solucionTuneles.clear();
                     solucionTuneles.addAll(actual);
                 }
