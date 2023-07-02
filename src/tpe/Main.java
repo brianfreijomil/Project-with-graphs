@@ -57,7 +57,8 @@ public class Main {
 
 		System.out.println("-----------------------------------");
 		System.out.println("backtracking con kruskal");
-		backConKruskal backKruskal = new backConKruskal(grafo,poda);
+		Timer time = new Timer();
+		backConKruskal backKruskal = new backConKruskal(grafo,poda, time);
 		System.out.println(backKruskal.back());
 		for (Arco arco : backKruskal.getTuneles()) {
             System.out.print("(" + arco.getVerticeOrigen() + ", " + arco.getVerticeDestino() + ")");
@@ -67,7 +68,7 @@ public class Main {
 
 		System.out.println("-----------------------------------");
 		System.out.println("backtracking con kruskal");
-		backConKruskal backKruskal2 = new backConKruskal(grafo2,135); //despues cambio esto
+		backConKruskal backKruskal2 = new backConKruskal(grafo2,135, time); //despues cambio esto
 		System.out.println(backKruskal2.back());
 		for (Arco arco : backKruskal2.getTuneles()) {
             System.out.print("(" + arco.getVerticeOrigen() + ", " + arco.getVerticeDestino() + ")");
@@ -77,7 +78,7 @@ public class Main {
 
 		System.out.println("-----------------------------------");
 		System.out.println("backtracking con kruskal");
-		backConKruskal backKruskal3 = new backConKruskal(grafo3,440); //despues cambio esto
+		backConKruskal backKruskal3 = new backConKruskal(grafo3,440, time); //despues cambio esto
 		System.out.println(backKruskal3.back());
 		for (Arco arco : backKruskal3.getTuneles()) {
             System.out.print("(" + arco.getVerticeOrigen() + ", " + arco.getVerticeDestino() + ")");
