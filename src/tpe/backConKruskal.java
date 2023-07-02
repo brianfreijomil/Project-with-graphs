@@ -26,7 +26,8 @@ public class backConKruskal {
         Iterator<Arco> it = grafo.obtenerArcos();
         while (it.hasNext()) {
             Arco arco = it.next();
-            arcos.add(arco);
+            if(!arcos.contains(arco))
+                arcos.add(arco);
         }
 
         ArrayList<Arco> actual = new ArrayList<Arco>();
@@ -57,19 +58,20 @@ public class backConKruskal {
         else { //recorro todas las posibilidades
 
             int i = pos;
-            int j = pos;
+            int j;
             while(i < arcos.size()) {
+                j=i;
                 Arco arco = arcos.get(i);
                 if(!actual.contains(arco)) {
                     actual.add(arco); //agrego
-                    if(getSumaArcos(actual) <= poda) {
-                        j++;
-                        this.backRecursivo(actual,considerados,j); //sigo explorando
+                        if(getSumaArcos(actual) <= poda && actual.size() <= grafo.cantidadVertices()-1) {
+                            j++;
+                            this.backRecursivo(actual,considerados,j); //sigo explorando
+                        }
+
                     }
                     actual.remove(arco); //elimino
-                }
                 i++;
-                j++;
             }
         }
     }
@@ -162,3 +164,4 @@ public class backConKruskal {
     }
 
 }
+
