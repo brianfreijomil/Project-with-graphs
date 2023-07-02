@@ -69,23 +69,16 @@ public class backConKruskal {
                 Arco arco = arcos.get(i);
                 if(!actual.contains(arco)) {
                     actual.add(arco); //agrego
-<<<<<<< HEAD
                         if(getSumaArcos(actual) <= poda && actual.size() <= grafo.cantidadVertices()-1) {
                             j++;
                             this.backRecursivo(actual,considerados,j); //sigo explorando
                         }
 
-=======
-                    if(this.suma <= poda) {
-                        j++;
-                        this.backRecursivo(actual,considerados,j); //sigo explorando
->>>>>>> 44cfb38a4a084a15dbc20358c43ede6321b25034
                     }
                     actual.remove(arco); //elimino
                 i++;
             }
         }
-    }
     }
 
     private boolean verificarConsiderados(ArrayList<Arco>list, ArrayList<Integer>considerados) {
