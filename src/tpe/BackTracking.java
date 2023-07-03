@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
-public class backConKruskal {
+public class BackTracking {
     
     private Grafo grafo;
     private ArrayList<Arco> arcos;
@@ -12,17 +12,16 @@ public class backConKruskal {
     private int poda;
     private int distTotal;
     private int metrica;
-    private Timer time;
 
-    public backConKruskal(Grafo grafo, int poda, Timer time) {
+    public BackTracking(Grafo grafo, int poda) {
         this.grafo = grafo;
         this.poda = poda;
         this.arcos = new ArrayList<Arco>();
         this.solucionTuneles = new ArrayList<Arco>();
-        this.time = time;
     }
 
-    public int back() {
+    //Este metodo 
+    public int backTracking() {
         distTotal=0;
         metrica=0;
         Iterator<Arco> it = grafo.obtenerArcos();
@@ -31,19 +30,14 @@ public class backConKruskal {
             if(!arcos.contains(arco))
                 arcos.add(arco);
         }
-
         ArrayList<Arco> actual = new ArrayList<Arco>();
         ArrayList<Integer> considerados = new ArrayList();
-
         int pos = 0;
-        this.time.start();
-        this.backRecursivo(actual,considerados,pos);
-        System.out.println(this.time.stop());
-
+        this.backTracking(actual,considerados,pos);
         return distTotal;
     }
 
-    private void backRecursivo(ArrayList<Arco> actual,ArrayList<Integer> considerados,int pos) {
+    private void backTracking(ArrayList<Arco> actual,ArrayList<Integer> considerados,int pos) {
         metrica++;
         if(this.metodoKruskal(actual,considerados)) { //solucion posible
             int sumaActual = this.getSumaArcos(actual);
@@ -60,7 +54,6 @@ public class backConKruskal {
             }
         }
         else { //recorro todas las posibilidades
-
             int i = pos;
             int j;
             while(i < arcos.size()) {
@@ -70,9 +63,8 @@ public class backConKruskal {
                     actual.add(arco); //agrego
                         if(getSumaArcos(actual) <= poda && actual.size() <= grafo.cantidadVertices()-1) {
                             j++;
-                            this.backRecursivo(actual,considerados,j); //sigo explorando
+                            this.backTracking(actual,considerados,j); //sigo explorando
                         }
-
                     }
                     actual.remove(arco); //elimino
                 i++;
@@ -104,8 +96,7 @@ public class backConKruskal {
         return suma;
     }
 
-
-     public boolean metodoKruskal(ArrayList<Arco> candidato,ArrayList<Integer>considerados) {
+    public boolean metodoKruskal(ArrayList<Arco> candidato,ArrayList<Integer>considerados) {
         if(verificarConsiderados(candidato,considerados)) {
             HashMap<Integer,Integer> padres = new HashMap<Integer,Integer>();
         for (int i = 1; i <= grafo.cantidadVertices(); i++) {
@@ -115,7 +106,6 @@ public class backConKruskal {
         int i = 0;
         int cantArcos = candidato.size();
         int cantVertices = grafo.cantidadVertices();
-
         while((iArcos<cantVertices-1)&&(i<cantArcos)) {
             Integer origen = candidato.get(i).getVerticeOrigen();
             Integer destino = candidato.get(i).getVerticeDestino();
@@ -134,13 +124,15 @@ public class backConKruskal {
             return false;
         }
     }
-    int find(int x,HashMap<Integer,Integer>padres) {
+
+    public int find(int x,HashMap<Integer,Integer>padres) {
         if (padres.get(x) == x) {
             return x;
         }
         return find(padres.get(x),padres);
     }
-    void unite(int x, int y, HashMap<Integer,Integer>padres) {
+
+    public void unite(int x, int y, HashMap<Integer,Integer>padres) {
         int fx = find(x,padres);
         int fy = find(y,padres);
         if(fx == x) {
@@ -165,6 +157,10 @@ public class backConKruskal {
         ArrayList<Arco> ret = new ArrayList<Arco>();
         ret.addAll(solucionTuneles);
         return ret;
+    }
+
+    public int getDistanciaTotal() {
+        return distTotal;
     }
 
 }

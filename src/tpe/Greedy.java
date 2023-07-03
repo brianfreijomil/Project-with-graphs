@@ -1,148 +1,128 @@
 package tpe;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 
 public class Greedy {
-    
+
+    private ArrayList<Arco> arcos;
     private Grafo grafo;
-    private HashMap<Integer,Integer> padre;
-    private HashMap<Integer,Integer> distancia;
-    private ArrayList<Integer> solucion;
+    private int ameArcos,ameNI;
+    private HashMap<Integer,Integer> padres;
+    private ArrayList<Arco> tuneles;
     private int metrica;
-    private Integer distanciaFinal;
+    private int distanciaTotal;
 
-    public Greedy(Grafo grafo) {
+    Greedy(Grafo grafo) {
+        this.padres = new HashMap();
+        this.arcos = new ArrayList<Arco>();
         this.grafo = grafo;
-        this.distancia = new HashMap<>();
-        this.padre = new HashMap<>();
-        this.solucion = new ArrayList<Integer>();
+        this.tuneles = new ArrayList<>();
+        this.inicializoArcosPadres();
     }
 
-    //debe tener metodo usado (Greedy)
-    //tuneles construidos (arcos)
-    //cant metros a construir
-    //costo computacional
-    public int resolucionGreedy() {
+    /*
+     * En este metodo se carga el array de arcos obteniendo todos los 
+     * arcos del grafo (eliminando las duplicaciones de los arcos).
+     * Ademas se ordena el array de arcos de menor a mayor comparando las etiquetas(kms) de los arcos.
+     * Luego se rellena un hashMap(padres) con cada clave igual a su valor
+    */
+    public void inicializoArcosPadres() {
+        //cargo arcos
+        Iterator<Arco> itArcos = grafo.obtenerArcos();
+        while (itArcos.hasNext()) {
+            Arco arc = itArcos.next();
+            if(!arcos.contains(arc)) {
+                arcos.add(arc);
+            }
+        }
 
-        distanciaFinal = 0;
+        //ordeno arcos ASC por distancia
+        Collections.sort(arcos, new ComparadorArcos());
+
+        //cargo padres
+        for (int i = 1; i <= grafo.cantidadVertices(); i++) {
+            padres.put(i, i);
+        }
+
+    }
+
+    //Este metodo greedy utiliza la tecnica Kruskal para tratar de encontrar un árbol recubridor mínimo en un 
+    //grafo conexo y ponderado, buscando un subconjunto de aristas que, formando un árbol, incluyen 
+    //todos los vértices y donde el valor de la suma de todas las aristas del árbol es el mínimo
+    public int greedy() {
         metrica = 0;
-        Integer sumaDistancias;
-        HashMap<Integer,Integer> solucionPadres = new HashMap<>();
-        Iterator<Integer> it = grafo.obtenerVertices();
+        ameArcos = 0;
+        distanciaTotal = 0;
+        ameNI = 0;
+        int cantArcos = grafo.cantidadArcos();
+        int cantVertices = grafo.cantidadVertices();
 
-        //hago un dijkstra por cada vertice del grafo para conseguir la mejor solucion
-        while(it.hasNext()) {
-            Integer v = it.next();
-            this.Dijkstra(v);
-            sumaDistancias = this.getSumaDistancias();
-            if(distanciaFinal == 0) {
-                distanciaFinal = sumaDistancias;
-            }else {
-                if(sumaDistancias < distanciaFinal) {
-                    distanciaFinal = sumaDistancias; //me quedo con la distancia mas corta
-                    solucionPadres.clear(); //limpio solucion actual y me quedo con la mejor
-                    solucionPadres.putAll(padre);
-                }
+        //recorro arr de arcos ordenado y observo que vertices se pueden unir sin generar ciclo
+        while((ameArcos<cantVertices-1)&&(ameNI<cantArcos)) {
+            Integer origen = arcos.get(ameNI).getVerticeOrigen();
+            Integer destino = arcos.get(ameNI).getVerticeDestino();
+            Integer distancia = (Integer)arcos.get(ameNI).getEtiqueta();
+            //chequeo si el arco se puede agregar al AME
+            //chequeo si el orig y dest se encuentran en el mismo arbol en caso de que no se pueda add
+            if(find(origen)!=find(destino)) {
+                tuneles.add(grafo.obtenerArco(origen, destino));
+                unite(origen, destino);
+                distanciaTotal += distancia; //se agrega la distancia al total de kms a construir
+                ameArcos++; //aumenta contador de arcos de AME
+            }
+
+            ameNI++;
+        }
+        //si la cant de arcos del arbol minima expansion es igual a la 
+        //cant de vertices -1 entonces se encontro una solucion
+        if(ameArcos==cantVertices-1) {
+            return distanciaTotal;
+        }
+        //caso contrario retorna 0
+        return 0;
+    }
+
+    public int find(int x) { //encuentra el mayor padre de vertice x
+        metrica++;
+        if (padres.get(x) == x) { //si padre de x es x retorno valor x
+            return x;
+        }
+        return find(padres.get(x)); //retorna valor del padre encontrado
+    }
+
+    public void unite(int x, int y) { // este metodo une dos vertices
+        int fx = find(x);
+        int fy = find(y);
+        if(fx == x) { //si fx y x son iguales entonces reemplazo el padre de fx por y
+            padres.replace(fx,y);
+        }
+        else { //si fx y x no son iguales (x ya tiene padre)
+            if(fy == y) { //si y no tiene padre cambio el padre de y por x
+                padres.replace(y,x);
+            }
+            else { //si y tiene padre (fy) entonces seguro fy de fy es igual
+                //si tengo x=1, y=3, fy=4, fy de 4 = 4
+                //entonces fy de 4 = 3, fy = 1
+              padres.replace(fy,y);
+              padres.replace(y,x);
             }
         }
-
-        padre.clear();
-        padre.putAll(solucionPadres);
-        return distanciaFinal;
     }
-
-    private void Dijkstra(Integer origen) {
-
-        padre.clear();
-        distancia.clear();
-        solucion.clear();
-
-        //seteo valores iniciales para distancia y padre de cada vertice
-        Iterator<Integer> it = grafo.obtenerVertices();
-        while(it.hasNext()) {
-            Integer v = it.next();
-            padre.put(v, null);
-            distancia.put(v, 100000);
-        }
-
-        distancia.replace(origen, 0); //seteo distancia desde origen a origen en 0
-
-        while (grafo.cantidadVertices() > solucion.size()) {//(mientras la cant de vertices sea distinta al tamaño de la solucion sigo)
-            metrica++;
-            Integer actual = this.seleccionar(); // vertice con menor distancia al origen y aun no considerado
-            solucion.add(actual);
-            Iterator<Integer> ady = grafo.obtenerAdyacentes(actual);
-            while(ady.hasNext()) {
-                metrica++;
-                Integer k = ady.next();
-                if(!solucion.contains(k)) { //pregunto si todavia no fue considerado
-                    Integer nuevaDistancia = distancia.get(actual) + distanciaEntreVertices(actual, k); //suma de dist de actual al origen mas dist entre actual y ady
-                    if(nuevaDistancia < distancia.get(k)) {
-                        distancia.replace(k, nuevaDistancia); //nueva dist de k al origen
-                        padre.replace(k, actual); //nuevo padre de k
-                    }
-                }
-            }
-        }
-    }
-
-    //OBTENGO EL VERTICE CON MENOR DISTANCIA AL ORIGEN, Y AUN NO CONSIDERADO
-    private Integer seleccionar() {
-
-        int s = 100000; //distancia inicial (HAY QUE CAMBIARLO)
-        Integer k = 0;
-
-        //recorro los elementos de distancia y busco el que tenga menor valor y que aun no este en la solucion
-        Iterator<Integer> it = grafo.obtenerVertices();
-        while(it.hasNext()) {
-            Integer v = it.next();
-            if(distancia.get(v) < s && !solucion.contains(v)) {
-                s = distancia.get(v);  //si dist menor a s y no fue considerada es posible candidato
-                k = v;
-            }
-        }
-
-        return k; //retorno vertice con menor distancia al origen 
-    }
-
-    //OBTENGO SUMA DE TODAS LAS DISTANCIAS DEL HASH DISTANCIA
-    private int getSumaDistancias() {
-        int suma = 0;
-        for (Integer value : distancia.values()) {
-            suma += value;
-        }
-        return suma;
-    }
-
-    //OBTENGO DISTANCIA ENTRE 2 VERTICES
-    // este metodo obtiene el arco de un grafo dado por dos vertices, con el cual obtenemos la etiqueta (distancia)
-    private Integer distanciaEntreVertices(Integer origen,Integer destino) {
-		Arco arco = grafo.obtenerArco(origen, destino);
-        Integer distancia = (Integer) arco.getEtiqueta();
-        return distancia;
-	}
 
     public ArrayList<Arco> getTuneles() {
-        ArrayList<Arco> tuneles = new ArrayList<Arco>();
-        for (Integer i : this.padre.keySet()) {
-            Integer value = this.padre.get(i);
-            if(value != null) {
-                Arco arco = grafo.obtenerArco(i, value);
-                tuneles.add(arco);
-            }
-        }
-
-        return tuneles;
-    }
-
-    public Integer getMtsConstruccion() {
-        return distanciaFinal;
+        ArrayList<Arco> aux = new ArrayList();
+        aux.addAll(tuneles);
+        return aux;
     }
 
     public int getMetrica() {
         return metrica;
     }
-    
+
+    public int getDistanciaTotal() {
+        return distanciaTotal;
+    }
 }

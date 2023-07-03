@@ -7,8 +7,7 @@ public class Main {
 
 	public static void main(String[] args) {
 
-		//grafos, servicios
-        
+		//grafos
         GrafoNoDirigido grafo = new GrafoNoDirigido();
 		GrafoNoDirigido grafo2 = new GrafoNoDirigido();
 		GrafoNoDirigido grafo3 = new GrafoNoDirigido();
@@ -23,70 +22,58 @@ public class Main {
 		CSVReader reader2 = new CSVReader(path2);
 		CSVReader reader3 = new CSVReader(path3);
 
-		// cargo grafos
+		// cargo grafos con la informacion de los datasets
 		reader1.read(grafo);
 		reader2.read(grafo2);
 		reader3.read(grafo3);
 
+		//Instancio servicio greedy
+		Greedy g1 = new Greedy(grafo);
+		Greedy g2 = new Greedy(grafo2);
+		Greedy g3 = new Greedy(grafo3);
 
-		GreedyConKruskal k = new GreedyConKruskal(grafo);
-		int poda = k.metodoKruskal();
-		System.out.println("Greedy GRAFO 1: "+ poda);
-		for (Arco arco : k.getTuneles()) {
-            System.out.print("(" + arco.getVerticeOrigen() + ", " + arco.getVerticeDestino() + ")");
-        }
-		System.out.println();
-		System.out.println(k.getMetrica());
-		System.out.println("-----------------------------------");
-		GreedyConKruskal k2 = new GreedyConKruskal(grafo2);
-		System.out.println("Greedy GRAFO 2: "+k2.metodoKruskal());
-		for (Arco arco : k2.getTuneles()) {
-            System.out.print("(" + arco.getVerticeOrigen() + ", " + arco.getVerticeDestino() + ")");
-        }
-		System.out.println();
-		System.out.println(k2.getMetrica());
-		System.out.println("-----------------------------------");
-		GreedyConKruskal k3 = new GreedyConKruskal(grafo3);
-		System.out.println("Greedy GRAFO 3: "+k3.metodoKruskal());
-		for (Arco arco : k3.getTuneles()) {
-            System.out.print("(" + arco.getVerticeOrigen() + ", " + arco.getVerticeDestino() + ")");
-        }
-		System.out.println();
-		System.out.println(k3.getMetrica());
+		//resultados servicio greedy
+		//reutilizo los resultados de greedy como poda del servicio Backtracking
+		int podaBack1 = imprimirResultadosGreedy(g1);
+		int podaBack2 = imprimirResultadosGreedy(g2);
+		int podaBack3 = imprimirResultadosGreedy(g3);
 
-		Timer  timer = new Timer();
-		System.out.println("-----------------------------------");
-		System.out.println("backtracking con kruskal");
-		backConKruskal backKruskal = new backConKruskal(grafo,poda,timer);
-		System.out.println(backKruskal.back());
-		for (Arco arco : backKruskal.getTuneles()) {
-            System.out.print("(" + arco.getVerticeOrigen() + ", " + arco.getVerticeDestino() + ")");
-        }
-		System.out.println();
-		System.out.println(backKruskal.getMetrica());
+		//instancio servicio backtracking
+		BackTracking b1 = new BackTracking(grafo,podaBack1);
+		BackTracking b2 = new BackTracking(grafo2,podaBack2);
+		BackTracking b3 = new BackTracking(grafo3,podaBack3);
 
-		System.out.println("-----------------------------------");
-		System.out.println("backtracking con kruskal");
-		backConKruskal backKruskal2 = new backConKruskal(grafo2,135,timer); //despues cambio esto
-		System.out.println(backKruskal2.back());
-		for (Arco arco : backKruskal2.getTuneles()) {
-            System.out.print("(" + arco.getVerticeOrigen() + ", " + arco.getVerticeDestino() + ")");
-        }
-		System.out.println();
-		System.out.println(backKruskal2.getMetrica());
-
-		System.out.println("-----------------------------------");
-		System.out.println("backtracking con kruskal");
-		backConKruskal backKruskal3 = new backConKruskal(grafo3,440,timer); //despues cambio esto
-		System.out.println(backKruskal3.back());
-		for (Arco arco : backKruskal3.getTuneles()) {
-            System.out.print("(" + arco.getVerticeOrigen() + ", " + arco.getVerticeDestino() + ")");
-        }
-		System.out.println();
-		System.out.println(backKruskal3.getMetrica());
-
+		//resultados servicio backtracking
+		imprimirResultadoBackTracking(b1);
+		imprimirResultadoBackTracking(b2);
+		imprimirResultadoBackTracking(b3);
 		
-
-		
+	}
+	//imprime los resultados de el servicio greedy y retorna la distancia obtenida
+	public static int imprimirResultadosGreedy(Greedy g) {
+		int poda = g.greedy();
+		System.out.println("- Greedy");
+		System.out.print("- ");
+		for (Arco arco : g.getTuneles()) {
+            System.out.print(arco.toString());
+        }
+		System.out.println();
+		System.out.println("- "+poda+" Kms");
+		System.out.println("- "+g.getMetrica()+" Metrica");
+		System.out.println("----------------------------------------------------------------");
+		return poda;
+	}
+	//imprime los resultados de el servicio backtracking
+	public static void imprimirResultadoBackTracking(BackTracking b) {
+		int resultKms = b.backTracking();
+		System.out.println("- BackTracking");
+		System.out.print("- ");
+		for (Arco arco : b.getTuneles()) {
+            System.out.print(arco.toString());
+        }
+		System.out.println();
+		System.out.println(resultKms+" Kms");
+		System.out.println("- "+b.getMetrica()+" Metrica");
+		System.out.println("----------------------------------------------------------------");
 	}
 }

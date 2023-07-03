@@ -41,4 +41,8 @@ public class Arco<T> {
 		}
 	}
 
+	public String toString() {
+		return "(E"+verticeOrigen+"-E"+verticeDestino+","+etiqueta+"kms)";
+	}
+
 }
