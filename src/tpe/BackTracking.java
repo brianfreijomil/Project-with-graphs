@@ -92,15 +92,6 @@ public class BackTracking {
         return verticesConsiderados.size() == grafo.cantidadVertices();
     }
 
-    private int getSumaArcos(ArrayList<Arco> list) {
-        int suma = 0;
-        for (Arco arco : list) {
-            int dist = (Integer) arco.getEtiqueta();
-            suma += dist;
-        }
-        return suma;
-    }
-
     public boolean metodoKruskal(ArrayList<Arco> candidato) {
         if(verificarConsiderados(candidato)) {
             int cantVertices = grafo.cantidadVertices();
