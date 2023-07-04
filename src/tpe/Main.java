@@ -46,7 +46,7 @@ public class Main {
 		//resultados servicio backtracking
 		imprimirResultadoBackTracking(b1);
 		imprimirResultadoBackTracking(b2);
-		imprimirResultadoBackTracking(b3);
+		//imprimirResultadoBackTracking(b3);
 		
 	}
 	//imprime los resultados de el servicio greedy y retorna la distancia obtenida
@@ -72,7 +72,7 @@ public class Main {
             System.out.print(arco.toString());
         }
 		System.out.println();
-		System.out.println(resultKms+" Kms");
+		System.out.println("- "+resultKms+" Kms");
 		System.out.println("- "+b.getMetrica()+" Metrica");
 		System.out.println("----------------------------------------------------------------");
 	}

@@ -9,6 +9,7 @@ public class BackTracking {
     private Grafo grafo;
     private ArrayList<Arco> arcos;
     private ArrayList<Arco> solucionTuneles;
+    private ArrayList<Integer> verticesConsiderados;
     private int poda;
     private int distTotal;
     private int metrica;
@@ -18,6 +19,7 @@ public class BackTracking {
         this.poda = poda;
         this.arcos = new ArrayList<Arco>();
         this.solucionTuneles = new ArrayList<Arco>();
+        this.verticesConsiderados = new ArrayList();
     }
 
     //Este metodo 
@@ -31,23 +33,22 @@ public class BackTracking {
                 arcos.add(arco);
         }
         ArrayList<Arco> actual = new ArrayList<Arco>();
-        ArrayList<Integer> considerados = new ArrayList();
         int pos = 0;
-        this.backTracking(actual,considerados,pos);
+        int sumaArcos = 0;
+        this.backTracking(actual,pos,sumaArcos);
         return distTotal;
     }
 
-    private void backTracking(ArrayList<Arco> actual,ArrayList<Integer> considerados,int pos) {
+    private void backTracking(ArrayList<Arco> actual,int pos,int sumaArcos) {
         metrica++;
-        if(this.metodoKruskal(actual,considerados)) { //solucion posible
-            int sumaActual = this.getSumaArcos(actual);
+        if(this.metodoKruskal(actual)) { //solucion posible
             if(distTotal == 0) {
-                distTotal = sumaActual;
+                distTotal = sumaArcos;
                 solucionTuneles.addAll(actual);
             }
             else {
-                if(distTotal > sumaActual) {
-                    distTotal = sumaActual;
+                if(distTotal > sumaArcos) {
+                    distTotal = sumaArcos;
                     solucionTuneles.clear();
                     solucionTuneles.addAll(actual);
                 }
@@ -61,30 +62,34 @@ public class BackTracking {
                 Arco arco = arcos.get(i);
                 if(!actual.contains(arco)) {
                     actual.add(arco); //agrego
-                        if(getSumaArcos(actual) <= poda && actual.size() <= grafo.cantidadVertices()-1) {
+                    sumaArcos += (Integer) arco.getEtiqueta(); //agrego
+                        if(sumaArcos <= poda && actual.size() <= grafo.cantidadVertices()-1) {
                             j++;
-                            this.backTracking(actual,considerados,j); //sigo explorando
+                            this.backTracking(actual,j,sumaArcos); //sigo explorando
                         }
                     }
+                    sumaArcos -= (Integer) arco.getEtiqueta(); //remuevo
                     actual.remove(arco); //elimino
                 i++;
             }
         }
     }
 
-    private boolean verificarConsiderados(ArrayList<Arco>list, ArrayList<Integer>considerados) {
-        considerados.clear();
+    private boolean verificarConsiderados(ArrayList<Arco>list) {
+        if(!verticesConsiderados.isEmpty()) {
+            verticesConsiderados.clear();
+        }
         for (Arco a : list) {
             Integer origen = a.getVerticeOrigen();
             Integer destino = a.getVerticeDestino();
-            if(!considerados.contains(origen)) {
-                considerados.add(origen);
+            if(!verticesConsiderados.contains(origen)) {
+                verticesConsiderados.add(origen);
             }
-            if(!considerados.contains(destino)) {
-                considerados.add(destino);
+            if(!verticesConsiderados.contains(destino)) {
+                verticesConsiderados.add(destino);
             } 
         }
-        return considerados.size() == grafo.cantidadVertices();
+        return verticesConsiderados.size() == grafo.cantidadVertices();
     }
 
     private int getSumaArcos(ArrayList<Arco> list) {
@@ -96,29 +101,29 @@ public class BackTracking {
         return suma;
     }
 
-    public boolean metodoKruskal(ArrayList<Arco> candidato,ArrayList<Integer>considerados) {
-        if(verificarConsiderados(candidato,considerados)) {
+    public boolean metodoKruskal(ArrayList<Arco> candidato) {
+        if(verificarConsiderados(candidato)) {
+            int cantVertices = grafo.cantidadVertices();
             HashMap<Integer,Integer> padres = new HashMap<Integer,Integer>();
-        for (int i = 1; i <= grafo.cantidadVertices(); i++) {
-            padres.put(i, i);
-        }
-        int iArcos = 0;
-        int i = 0;
-        int cantArcos = candidato.size();
-        int cantVertices = grafo.cantidadVertices();
-        while((iArcos<cantVertices-1)&&(i<cantArcos)) {
-            Integer origen = candidato.get(i).getVerticeOrigen();
-            Integer destino = candidato.get(i).getVerticeDestino();
-            if(find(origen,padres)!=find(destino,padres)) {
-                unite(origen, destino,padres);
-                iArcos++;
+            for (int i = 1; i <= cantVertices; i++) {
+                padres.put(i, i);
             }
-            i++;
-        }
-        if(iArcos==cantVertices-1) {
-            return true;
-        }
-        return false;
+            int iArcos = 0;
+            int i = 0;
+            int cantArcos = candidato.size();
+            while((iArcos<cantVertices-1)&&(i<cantArcos)) {
+                Integer origen = candidato.get(i).getVerticeOrigen();
+                Integer destino = candidato.get(i).getVerticeDestino();
+                if(find(origen,padres)!=find(destino,padres)) {
+                    unite(origen, destino,padres);
+                    iArcos++;
+                }
+                i++;
+            }
+            if(iArcos==cantVertices-1) {
+                return true;
+            }
+            return false;
         }
         else {
             return false;
